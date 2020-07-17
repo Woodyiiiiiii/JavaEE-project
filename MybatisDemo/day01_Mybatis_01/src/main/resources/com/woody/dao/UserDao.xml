@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--    以上XML文件配置信息在"黑马资料"文件夹的相应目录下找-->
+<mapper namespace="com.woody.dao.UserDao">
+    <!-- 配置查询所有 -->
+    <!--    id属性要与接口名的方法名配对，返回类型是实体类型-->
+    <select id="findAll" resultType="com.woody.domain.User">
+        select * from user
+    </select>
+</mapper>

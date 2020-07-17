@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.woody"/>
+
+    <bean id="execution" class="com.woody.domain.Execution"/>
+
+    <bean id="adviceAOP" class="com.woody.adviceAOP.Advice"/>
+
+    <aop:config>
+        <aop:aspect id="advice" ref="adviceAOP">
+            <aop:pointcut id="pt1" expression="execution(* com.woody.domain.*.*(..))"/>
+<!--            <aop:before method="beforeAdvice" pointcut-ref="pt1"/>-->
+<!--            <aop:after-returning method="afterReturningAdvice" pointcut-ref="pt1"/>-->
+<!--            <aop:after-throwing method="afterThrowingAdvice" pointcut-ref="pt1"/>-->
+<!--            <aop:after method="afterAdvice" pointcut-ref="pt1"/>-->
+            <aop:around method="aroundAdvice" pointcut-ref="pt1"/>
+        </aop:aspect>
+
+    </aop:config>
+
+    <aop:aspectj-autoproxy/>
+
+</beans>

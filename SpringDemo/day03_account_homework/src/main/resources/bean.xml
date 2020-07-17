@@ -1,0 +1,78 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+<!-- 基于注解的AOP配置 -->
+<!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+<!--       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--       xmlns:context="http://www.springframework.org/schema/context"-->
+<!--       xmlns:aop="http://www.springframework.org/schema/aop"-->
+<!--       xsi:schemaLocation="http://www.springframework.org/schema/beans-->
+<!--        https://www.springframework.org/schema/beans/spring-beans.xsd-->
+<!--        http://www.springframework.org/schema/context-->
+<!--        https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">-->
+
+<!--    &lt;!&ndash; 基于注解的配置 &ndash;&gt;-->
+<!--    <context:component-scan base-package="com.woody"></context:component-scan>-->
+
+<!--    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>-->
+
+    <!-- 配置Service -->
+    <bean id="accountService" class="com.woody.service.impl.AccountServiceImpl">
+        <!-- 注入Dao -->
+        <property name="accountDao" ref="accountDao"></property>
+    </bean>
+
+    <!-- 配置Dao -->
+    <bean id="accountDao" class="com.woody.dao.impl.AccountDaoImpl">
+        <property name="runner" ref="runner"></property>
+        <!-- 注入ConnectionUtils  -->
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+
+    <!-- 配置Query Runner对象 -->
+    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype"></bean>
+
+    <!-- 配置数据源 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!-- 连接数据库的必备信息 -->
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/springdemo?userUnicode=true
+            &amp;charactorEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=GMT"></property>
+        <property name="user" value="root"></property>
+        <property name="password" value=""></property>
+    </bean>
+
+    <!-- 配置Connection的工具类 ConnectionUtils -->
+    <bean id="connectionUtils" class="com.woody.utils.ConnectionUtils">
+        <!-- 注入数据源 -->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 配置事务管理器 -->
+    <bean id="txManager" class="com.woody.utils.TransactionManager">
+        <!-- 注入ConnectionUtils  -->
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+
+    <!-- 基于XML的AOP配置，加上xml文件开头改一改就行了 -->
+    <!-- 配置切面 -->
+    <aop:config>
+        <aop:aspect id = "txAdvice" ref="txManager">
+            <!-- 配置切入点表达式 -->
+            <aop:pointcut id="pt1" expression="execution(* com.woody.service.impl.*.*(..))"/>
+            <!-- 配置前置通知：开启事务 -->
+            <aop:before method="beginTransaction" pointcut-ref="pt1"></aop:before>
+            <!-- 配置后置通知：提交事务 -->
+            <aop:after-returning method="commit" pointcut-ref="pt1"></aop:after-returning>
+            <!-- 配置异常通知：回滚事务 -->
+            <aop:after-throwing method="rollback" pointcut-ref="pt1"></aop:after-throwing>
+            <!-- 配置最终通知：释放连接 -->
+            <aop:after method="release" pointcut-ref="pt1"></aop:after>
+        </aop:aspect>
+    </aop:config>
+
+</beans>

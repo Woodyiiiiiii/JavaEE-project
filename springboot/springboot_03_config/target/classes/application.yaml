@@ -1,0 +1,30 @@
+#person:
+#  age: 20
+#  boss: false
+#  birth: 1999/8/3
+#  maps: {k1: v1, k2: v2}
+#  list:
+#    - yan
+#    - wan
+#  dog:
+#    name: heiyao
+#    age: 5
+#  last-name: zhangsan
+
+server:
+  port: 8081
+spring:
+  profiles:
+    active: prod
+---
+server:
+  port: 8083
+
+spring:
+  profiles: dev
+
+---
+server:
+  port: 8083
+spring:
+  profiles: prod

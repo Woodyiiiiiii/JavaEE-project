@@ -1,0 +1,48 @@
+{
+  "groups": [
+    {
+      "name": "person",
+      "type": "com.woody.bean.Person",
+      "sourceType": "com.woody.bean.Person"
+    }
+  ],
+  "properties": [
+    {
+      "name": "person.age",
+      "type": "java.lang.Integer",
+      "sourceType": "com.woody.bean.Person"
+    },
+    {
+      "name": "person.birth",
+      "type": "java.util.Date",
+      "sourceType": "com.woody.bean.Person"
+    },
+    {
+      "name": "person.boss",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.woody.bean.Person"
+    },
+    {
+      "name": "person.dog",
+      "type": "com.woody.bean.Dog",
+      "sourceType": "com.woody.bean.Person"
+    },
+    {
+      "name": "person.last-name",
+      "type": "java.lang.String",
+      "description": "@Value 相当于 <bean class=\"Person\">      <property name=\"lastName\" value=\"字面量\/${key}从环境变量，配置文件中获取值\/#{SpEL}\"\/> <\/bean>",
+      "sourceType": "com.woody.bean.Person"
+    },
+    {
+      "name": "person.list",
+      "type": "java.util.List<java.lang.Object>",
+      "sourceType": "com.woody.bean.Person"
+    },
+    {
+      "name": "person.maps",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>",
+      "sourceType": "com.woody.bean.Person"
+    }
+  ],
+  "hints": []
+}

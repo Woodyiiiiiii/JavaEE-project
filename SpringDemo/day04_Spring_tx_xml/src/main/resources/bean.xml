@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+<!--    配置业务层-->
+    <bean id="accountService" class="com.woody.service.impl.AccountServiceImpl">
+        <property name="accountDao" ref="accountDao"></property>
+    </bean>
+
+    <!-- 配置JDBCTemplate -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" >
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 配置数据源 -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/springdemo?userUnicode=true&amp;charactorEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=GMT"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value=""></property>
+    </bean>
+
+    <!-- 配置Dao层的JDBCTemplate(Dao中属性有JdbcTemplate的方式) -->
+    <bean id="accountDao" class="com.woody.Dao.Impl.AccountDaoImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
+
+<!--    Spring中基于XML的声明式事务控制配置步骤-->
+<!--        1. 配置事务管理器-->
+<!--        2. 配置事务的通知-->
+<!--            此时我们需要导入事务的约束-->
+<!--            在主页的Data Access中搜索xmlns:tx，这样既有AOP又有tx-->
+<!--            见下方的标签tx:advice，配置事务通知-->
+<!--                属性：-->
+<!--                    id：给事务通知起一个唯一标志-->
+<!--                    transaction-manager：给事务通知提供一个事务管理器引用-->
+<!--        3. 配置AOP中的通用切入点表达式(aop:pointcut模块)-->
+<!--        4. 建立事务通知和切入点表达式的对应关系(aop:advisor)，注意要在asp:aspect模块前-->
+<!--        5. 配置事务的属性-->
+<!--                在事务的通知tx:advice标签内部配置-->
+
+<!--    配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+<!--    配置事务的标签-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <!-- 配置事务的属性
+            isolation = "" 用于指定事务的隔离级别，默认值是DEFAULT，表示使用数据库的默认隔离级别
+            propagation="" 用于指定事务的传播行为，默认值是REQUIRED，表示一定会有事务，增删改的选择。查询方法可以选择SUPPORTS。
+            read-only="" 　用于指定事务是否只读，只有查询方法才能设置为true只读，默认值是false，表示读写。
+            timeout=""     用于指定事务的超时时间，默认值是-1，表示永不超时。如果指定了数值，则以秒为单位。
+            rollback-for="" 用于指定一个异常，当产生该异常时，事务回滚，当产生其他异常时，事务不回滚。没有默认值。表示任何事务都回滚。
+            no-rollback-for="" 用于指定一个异常，当产生该异常时，事务不回滚，当产生其他异常时，事务回滚。没有默认值。表示任何事务都回滚。
+
+            以后有很多方法，为了方便，可用*通配符。
+            *表示通配符，其中find*比*优先级高，所以以后写查询要统一规范。
+            下面的例子中find*先执行。
+        -->
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" read-only="false"/>
+            <tx:method name="find*" read-only="true" propagation="SUPPORTS"></tx:method>
+        </tx:attributes>
+    </tx:advice>
+
+<!--    配置AOP-->
+    <aop:config>
+        <!-- 配置切入点表达式 -->
+        <aop:pointcut id="pt1" expression="execution(* com.woody.service.impl.*.*(..))"/>
+        <!-- 建立切入点表达式和事务通知的对应关系 -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pt1"></aop:advisor>
+        <aop:aspect>
+
+        </aop:aspect>
+    </aop:config>
+
+</beans>

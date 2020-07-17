@@ -1,0 +1,7 @@
+th:href="@{/webjars/bootstrap/4.4.1-1/css/bootstrap.css}"
+th:href="@{/asserts/css/signin.css}"
+ th:src="@{/asserts/img/bootstrap-solid.svg}" 
+
+href="asserts/css/bootstrap.min.css"
+href="asserts/css/signin.css"
+src="asserts/img/bootstrap-solid.svg"
